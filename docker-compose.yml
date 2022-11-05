@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  server_side:
+    build: ./server
+    networks:
+      - backend
+
+  client_side:
+    build: ./client
+    environment:
+      - SERVER_HOST=server_side
+    networks:
+      - frontend
+      - backend
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - 8000:80
+    depends_on:
+      - client_side
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./var/log/nginx:/var/log/nginx
+    networks:
+      - frontend  
+
+networks:
+  backend:
+  frontend:
